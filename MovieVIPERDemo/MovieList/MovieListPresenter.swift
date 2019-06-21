@@ -20,6 +20,10 @@ import RealmSwift
 protocol MovieListViewPresenterProtocol: ViewPresenterProtocol {
     func getMoreMovies()
     func didSelect(movie: MovieData)
+    func getSearchList(search: String)
+    
+    var isSearchActive: Bool { get set }
+    var searchString: String { get set }
 }
 
 /// Should be conformed to by the `MovieListPresenter` and referenced by `MovieListInteractor`
@@ -38,9 +42,19 @@ protocol MovieListInteractorPresenterProtocol: class {
 /// The Presenter for the MovieList module
 final class MovieListPresenter: MovieListViewPresenterProtocol, MovieListInteractorPresenterProtocol {
     
+    var isSearchActive: Bool {
+        didSet {
+            self.page = 1
+        }
+    }
     
+    var searchString: String {
+        didSet {
+            getSearchList(search: searchString)
+        }
+    }
+
     var page = 1
-    
 	// MARK: - Constants
 
 	let router: MovieListPresenterRouterProtocol
@@ -55,6 +69,8 @@ final class MovieListPresenter: MovieListViewPresenterProtocol, MovieListInterac
 	init(router: MovieListPresenterRouterProtocol, interactor: MovieListPresenterInteractorProtocol) {
 		self.router = router
 		self.interactor = interactor
+        self.isSearchActive = false
+        self.searchString = "avengers"
 	}
 
 	// MARK: - MovieList View to Presenter Protocol
@@ -63,14 +79,19 @@ final class MovieListPresenter: MovieListViewPresenterProtocol, MovieListInterac
         view?.showLoader()
 		interactor.requestTitle()
         
+        getSearchList(search: self.searchString)
+	}
+    
+    func getSearchList(search: String) {
         if NetworkStatus.shared.isPresent() {
-            interactor.getMovieList(page: self.page)
+            interactor.getMovieList(page: self.page, search: search)
         } else {
             SwiftMessage.shared.showNoInternetMessage()
             interactor.getOfflineData()
         }
-	}
-
+    }
+    
+    
 	// MARK: - MovieList Interactor to Presenter Protocol
 
 	func set(title: String?) {
@@ -79,7 +100,7 @@ final class MovieListPresenter: MovieListViewPresenterProtocol, MovieListInterac
     
     func getMoreMovies() {
         page += 1
-        interactor.getMovieList(page: page)
+        interactor.getMovieList(page: page, search: self.searchString)
     }
     
     //MARK:- MovieList Presenter to Router
@@ -90,12 +111,17 @@ final class MovieListPresenter: MovieListViewPresenterProtocol, MovieListInterac
     
     func movieListFetched(movieList: List<MovieData>) {
         view?.removeLoader()
+        
         if movieList.isEmpty && page == 1{
             view?.addEmptyView(action: {
                 print("Retry")
             })
         } else {
-            view?.setData(list: movieList)
+            if isSearchActive {
+                view?.setSearchData(list: movieList, page: self.page)
+            } else {
+                view?.setData(list: movieList)
+            }
             view?.removeEmptyView()
         }
         

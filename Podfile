@@ -11,7 +11,7 @@ target 'MovieVIPERDemo' do
 	shared_pods
 	pod 'Alamofire'
     pod 'Kingfisher', '~> 5.0'
-    pod 'RealmSwift'
+    pod 'RealmSwift', git: 'https://github.com/realm/realm-cocoa.git', branch: 'tg/xcode-11-b1', submodules: true
     pod 'SwiftMessages'
     pod 'NVActivityIndicatorView'
 

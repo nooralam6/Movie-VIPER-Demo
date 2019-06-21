@@ -20,7 +20,7 @@ import RealmSwift
 protocol MovieListPresenterInteractorProtocol {
 	/// Requests the title for the presenter
 	func requestTitle()
-    func getMovieList(page: Int)
+    func getMovieList(page: Int, search: String)
     func getOfflineData()
 }
 
@@ -38,12 +38,12 @@ final class MovieListInteractor: MovieListPresenterInteractorProtocol {
 		presenter?.set(title: "Movie List")
 	}
     
-    func getMovieList(page: Int) {
-        APIService.shared.request(api: "", type: .get, parameters: ["s":"avengers", "page": page], completion: { (response) in
+    func getMovieList(page: Int, search: String) {
+        APIService.shared.request(api: "", type: .get, parameters: ["s": search, "page": page], completion: { (response) in
             do {
                 let resp = try decoder.decode(MovieListBase.self, from: response as! Data)
                 if resp.response == "False" {
-                    self.presenter?.errorOnFetchingList(title: "That's It!", message: "You have reached end of the list.")
+                    self.presenter?.errorOnFetchingList(title: "That's It!", message: resp.error ?? "You have reached end of the list.")
                 } else {
                     self.saveToRealm(list: resp.list)
                     self.presenter?.movieListFetched(movieList: resp.list)

@@ -27,6 +27,7 @@ protocol MovieListPresenterViewProtocol: class {
     func showLoader()
     func removeLoader()
     func setData(list: List<MovieData>)
+    func setSearchData(list: List<MovieData>, page: Int)
     func addEmptyView(action: @escaping()->())
     func removeEmptyView()
 }
@@ -36,20 +37,27 @@ protocol MovieListPresenterViewProtocol: class {
 /// The View Controller for the MovieList module
 class MovieListViewController: UIViewController, StoryboardIdentifiable, MovieListPresenterViewProtocol {
     
+    
+    
 	// MARK: - Constants
     @IBOutlet weak var tableView: UITableView!
     
     // MARK: Variables
 	var presenter: MovieListViewPresenterProtocol?
     var movieList = List<MovieData>()
-    
+    var search = UISearchController(searchResultsController: nil)
 	// MARK: - Load Functions
 
 	override func viewDidLoad() {
     	super.viewDidLoad()
-		presenter?.viewLoaded()
         tableView.register(UINib(nibName: "MovieListTableViewCell", bundle: nil), forCellReuseIdentifier: "movieCell")
 		view.backgroundColor = .white
+        self.navigationItem.largeTitleDisplayMode = .automatic
+        self.navigationItem.searchController = search                           // Write this line in viewDidLoad function
+        search.searchBar.delegate = self
+        self.tableView.keyboardDismissMode = .onDrag
+        presenter?.viewLoaded()
+
     }
 
 	// MARK: - MovieList Presenter to View Protocol
@@ -62,6 +70,14 @@ class MovieListViewController: UIViewController, StoryboardIdentifiable, MovieLi
         self.movieList.append(objectsIn: list)
         tableView.reloadData()
         DLog(message: movieList.count)
+    }
+    
+    func setSearchData(list: List<MovieData>, page: Int) {
+        if page == 1 {
+            self.movieList.removeAll()
+        }
+        self.movieList.append(objectsIn: list)
+        self.tableView.reloadData()
     }
 }
 
@@ -87,5 +103,23 @@ extension MovieListViewController: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         presenter?.didSelect(movie: movieList[indexPath.row])
+    }
+}
+
+extension MovieListViewController: UISearchBarDelegate {
+    func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
+        presenter?.isSearchActive = true
+    }
+    
+    func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
+        presenter?.isSearchActive = false
+    }
+    
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        presenter?.searchString = searchText
+    }
+
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        presenter?.isSearchActive = false
     }
 }

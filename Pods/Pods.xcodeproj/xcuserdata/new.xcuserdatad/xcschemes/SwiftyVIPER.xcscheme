@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "0930"
+   LastUpgradeVersion = "1100"
    version = "1.3">
    <BuildAction
       parallelizeBuildables = "YES"
@@ -14,10 +14,10 @@
             buildForArchiving = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "76FAC285F86E3E2CD9DF44FF3B64D5AF"
+               BlueprintIdentifier = "2919EF921D0033A8FBB84F6551F631B2"
+               BuildableName = "SwiftyVIPER.framework"
                BlueprintName = "SwiftyVIPER"
-               ReferencedContainer = "container:Pods.xcodeproj"
-               BuildableName = "SwiftyVIPER.framework">
+               ReferencedContainer = "container:Pods.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
