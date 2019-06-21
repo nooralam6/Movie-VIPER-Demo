@@ -50,7 +50,9 @@ final class MovieListPresenter: MovieListViewPresenterProtocol, MovieListInterac
     
     var searchString: String {
         didSet {
-            getSearchList(search: searchString)
+            if searchString.count > 4 {
+                getSearchList(search: searchString)
+            }
         }
     }
 

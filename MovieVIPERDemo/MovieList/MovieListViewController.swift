@@ -52,10 +52,12 @@ class MovieListViewController: UIViewController, StoryboardIdentifiable, MovieLi
     	super.viewDidLoad()
         tableView.register(UINib(nibName: "MovieListTableViewCell", bundle: nil), forCellReuseIdentifier: "movieCell")
 		view.backgroundColor = .white
+        self.navigationController?.navigationBar.prefersLargeTitles = true
         self.navigationItem.largeTitleDisplayMode = .automatic
-        self.navigationItem.searchController = search                           // Write this line in viewDidLoad function
+        self.navigationItem.searchController = search
         search.searchBar.delegate = self
         self.tableView.keyboardDismissMode = .onDrag
+        
         presenter?.viewLoaded()
 
     }

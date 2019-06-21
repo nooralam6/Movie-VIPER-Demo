@@ -74,6 +74,7 @@ final class MovieDetailPresenter: MovieDetailViewPresenterProtocol, MovieDetailI
     
     func movieDetailFetched(data: MovieDetailData) {
         view?.removeLoader()
+        view?.set(title: data.title)
         view?.setMovieDetail(data: data)
     }
     
